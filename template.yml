@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+- AWS::Serverless-2016-10-31
+- AWS::CodeStar
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: CodeStar projectId used to associate new resources to team members
+
+Resources:
+
+  UdpPing:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          SECRET1: deadbeef
+          SECRET2: helloworld
+      Handler: index.handler
+      Runtime: python2.7
+      Timeout: 5
+      MemorySize: 128
+      Role:
+        Fn::ImportValue:
+          !Join ['-', [!Ref 'ProjectId', !Ref 'AWS::Region', 'LambdaTrustRole']]
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: post
